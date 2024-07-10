@@ -63,23 +63,27 @@ const images = [
     description: 'Lighthouse Coast Sea',
   },
 ];
-const modal = document.getElementById('modal');
-      const modalImg = document.getElementById('modal-image');
-      const closeBtn = document.querySelector('.close');
-document.querySelectorAll('.gallery-link').forEach(link => {
-        link.addEventListener('click', function(event) {
-          event.preventDefault();
-          const imgSrc = this.querySelector('img').dataset.source;
-            console.log('Clicked image source:', imgSrc);
-            modal.style.display = 'block';
-          modalImg.src = imgSrc;
-        });
-});
-       closeBtn.addEventListener('click', function() {
-        modal.style.display = 'none';
-       });
-       window.addEventListener('click', function(event) {
-        if (event.target == modal) {
-          modal.style.display = 'none';
-        }
-      });
+const galleryContainer = document.querySelector('.gallery');
+const galleryMarkup = images.map(({ preview, original, description }) => `
+    <li class="gallery-item">
+        <a class="gallery-link" href="${original}">
+            <img
+                class="gallery-image"
+                src="${preview}"
+                data-source="${original}"
+                alt="${description}"
+            />
+        </a>
+    </li>
+`).join(` `);
+galleryContainer.innerHTML = galleryMarkup;
+galleryContainer.addEventListener(`click`, onGalleryClick);
+function onGalleryClick(event) {
+  event.preventDefault();
+  if (event.target.nodeName !== `IMG`) return;
+  const largeImageURL = event.target.dataset.source;
+  const instance = basicLightbox.create(`
+        <img src="${largeImageURL}" width="800" height="600">
+    `);
+    instance.show();
+};
